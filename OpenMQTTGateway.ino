@@ -586,78 +586,77 @@ void loop()
     // MQTT loop
     connectedOnce = true;
     client.loop();
-
-    #if defined(ESP8266) || defined(ESP32)
-      ArduinoOTA.handle();
-    #endif
-
-    #ifdef ZsensorBME280
-      MeasureTempHumAndPressure(); //Addon to measure Temperature, Humidity, Pressure and Altitude with a Bosch BME280
-    #endif
-    #ifdef ZsensorBH1750
-      MeasureLightIntensity(); //Addon to measure Light Intensity with a BH1750
-    #endif
-    #ifdef ZsensorTSL2561
-      MeasureLightIntensityTSL2561();
-    #endif
-    #ifdef ZsensorDHT
-      MeasureTempAndHum(); //Addon to measure the temperature with a DHT
-    #endif
-    #ifdef ZsensorINA226
-      MeasureINA226(); //Addon to measure the temperature with a DHT
-    #endif
-    #ifdef ZsensorHCSR501
-      MeasureHCSR501();
-    #endif
-    #ifdef ZsensorGPIOInput
-      MeasureGPIOInput();
-    #endif
-    #ifdef ZsensorGPIOKeyCode
-      MeasureGPIOKeyCode();
-    #endif
-    #ifdef ZsensorADC
-      MeasureADC(); //Addon to measure the analog value of analog pin
-    #endif
-    #ifdef ZgatewayLORA
-      LORAtoMQTT();
-    #endif
-    #ifdef ZgatewayRF
-      RFtoMQTT();
-    #endif
-    #ifdef ZgatewayRF315
-      RF315toMQTT();
-    #endif
-    #ifdef ZgatewayRF2
-      RF2toMQTT();
-    #endif
-    #ifdef ZgatewayPilight
-      PilighttoMQTT();
-    #endif
-    #ifdef ZgatewaySRFB
-      SRFBtoMQTT();
-    #endif
-    #ifdef ZgatewayIR
-      IRtoMQTT();
-    #endif
-    #ifdef ZgatewayBT
-        #ifndef multiCore
-          if(BTtoMQTT())
-          trc(F("BTtoMQTT OK"));
-        #endif
-    #endif
-    #ifdef Zgateway2G
-      if(_2GtoMQTT()){
-      trc(F("2GtoMQTT OK"));
-      }
-    #endif
-    #ifdef ZgatewayRFM69
-      if(RFM69toMQTT())
-      trc(F("RFM69toMQTT OK"));
-    #endif
-    #if defined(ESP8266) || defined(ESP32) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
-      stateMeasures();
-    #endif
   }
+  #if defined(ESP8266) || defined(ESP32)
+    ArduinoOTA.handle();
+  #endif
+
+  #ifdef ZsensorBME280
+    MeasureTempHumAndPressure(); //Addon to measure Temperature, Humidity, Pressure and Altitude with a Bosch BME280
+  #endif
+  #ifdef ZsensorBH1750
+    MeasureLightIntensity(); //Addon to measure Light Intensity with a BH1750
+  #endif
+  #ifdef ZsensorTSL2561
+    MeasureLightIntensityTSL2561();
+  #endif
+  #ifdef ZsensorDHT
+    MeasureTempAndHum(); //Addon to measure the temperature with a DHT
+  #endif
+  #ifdef ZsensorINA226
+    MeasureINA226(); //Addon to measure the temperature with a DHT
+  #endif
+  #ifdef ZsensorHCSR501
+    MeasureHCSR501();
+  #endif
+  #ifdef ZsensorGPIOInput
+    MeasureGPIOInput();
+  #endif
+  #ifdef ZsensorGPIOKeyCode
+    MeasureGPIOKeyCode();
+  #endif
+  #ifdef ZsensorADC
+    MeasureADC(); //Addon to measure the analog value of analog pin
+  #endif
+  #ifdef ZgatewayLORA
+    LORAtoMQTT();
+  #endif
+  #ifdef ZgatewayRF
+    RFtoMQTT();
+  #endif
+  #ifdef ZgatewayRF315
+    RF315toMQTT();
+  #endif
+  #ifdef ZgatewayRF2
+    RF2toMQTT();
+  #endif
+  #ifdef ZgatewayPilight
+    PilighttoMQTT();
+  #endif
+  #ifdef ZgatewaySRFB
+    SRFBtoMQTT();
+  #endif
+  #ifdef ZgatewayIR
+    IRtoMQTT();
+  #endif
+  #ifdef ZgatewayBT
+      #ifndef multiCore
+        if(BTtoMQTT())
+        trc(F("BTtoMQTT OK"));
+      #endif
+  #endif
+  #ifdef Zgateway2G
+    if(_2GtoMQTT()){
+    trc(F("2GtoMQTT OK"));
+    }
+  #endif
+  #ifdef ZgatewayRFM69
+    if(RFM69toMQTT())
+    trc(F("RFM69toMQTT OK"));
+  #endif
+  #if defined(ESP8266) || defined(ESP32) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
+    stateMeasures();
+  #endif
 }
 
 #if defined(ESP8266) || defined(ESP32) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
@@ -1029,6 +1028,7 @@ void pub(char * topicori, JsonObject& data){
       }
     #endif
     
+    if (client.connected()) {
     #ifdef jsonPublishing
       char JSONmessageBuffer[JSON_MSG_BUFFER];
       trc(F("Pub json into:"));
@@ -1068,6 +1068,9 @@ void pub(char * topicori, JsonObject& data){
         }
       }
     #endif
+    } else {
+      trc(F("no MQTT can't pub");
+    }
 
 }
 
