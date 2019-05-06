@@ -45,9 +45,6 @@
 #if defined(ZgatewayRF) || defined(ZgatewayRF2) || defined(ZgatewayPilight)
   #include "config_RF.h"
 #endif
-#ifdef ZgatewayRF315
-  #include "config_RF315.h"
-#endif
 #ifdef ZgatewayLORA
   #include "config_LORA.h"
 #endif
@@ -155,10 +152,12 @@ boolean reconnect() {
       //Subscribing to topic
       if (client.subscribe(subjectMQTTtoX)) {
         #ifdef ZgatewayRF
-          client.subscribe(subjectMultiGTWRF); // subject on which other OMG will publish, this OMG will store these msg and by the way don't republish them if they have been already published
-        #endif
-        #ifdef ZgatewayRF315
-          client.subscribe(subjectMultiGTWRF315);// subject on which other OMG will publish, this OMG will store these msg and by the way don't republish them if they have been already published
+          #ifdef RF433_EN
+            client.subscribe(subjectMultiGTWRF433); // subject on which other OMG will publish, this OMG will store these msg and by the way don't republish them if they have been already published
+          #endif
+          #ifdef RF315_EN
+            client.subscribe(subjectMultiGTWRF315); // subject on which other OMG will publish, this OMG will store these msg and by the way don't republish them if they have been already published
+          #endif
         #endif
         #ifdef ZgatewayIR
           client.subscribe(subjectMultiGTWIR);// subject on which other OMG will publish, this OMG will store these msg and by the way don't republish them if they have been already published
@@ -328,9 +327,6 @@ void setup()
   #endif
   #ifdef ZgatewayRF
     setupRF();
-  #endif
-  #ifdef ZgatewayRF315
-    setupRF315();
   #endif
   #ifdef ZgatewayRF2
     setupRF2();
@@ -624,9 +620,6 @@ void loop()
     #ifdef ZgatewayRF
       RFtoMQTT();
     #endif
-    #ifdef ZgatewayRF315
-      RF315toMQTT();
-    #endif
     #ifdef ZgatewayRF2
       RF2toMQTT();
     #endif
@@ -690,9 +683,6 @@ void stateMeasures(){
       String modules = "";
       #ifdef ZgatewayRF
           modules = modules + ZgatewayRF;
-      #endif
-      #ifdef ZgatewayRF315
-          modules = modules + ZgatewayRF315;
       #endif
       #ifdef ZsensorBME280
           modules = modules + ZsensorBME280;
@@ -838,9 +828,6 @@ void receivingMQTT(char * topicOri, char * datacallback) {
     #ifdef ZgatewayRF
       MQTTtoRF(topicOri, jsondata);
     #endif
-    #ifdef ZgatewayRF315
-      MQTTtoRF315(topicOri, jsondata);
-    #endif
     #ifdef ZgatewayRF2
       MQTTtoRF2(topicOri, jsondata);
     #endif
@@ -871,9 +858,6 @@ void receivingMQTT(char * topicOri, char * datacallback) {
       #endif
       #ifdef ZgatewayRF
         MQTTtoRF(topicOri, datacallback);
-      #endif
-      #ifdef ZgatewayRF315
-        MQTTtoRF315(topicOri, datacallback);
       #endif
       #ifdef ZgatewayRF2
         MQTTtoRF2(topicOri, datacallback);

@@ -24,14 +24,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*-------------------RF topics & parameters----------------------*/
+/*-------------------RF Master Switch----------------------*/
+#define RF433_EN
+#define RF315_EN
+
+/*-------------------RF 433Mhz topics & parameters----------------------*/
 //433Mhz MQTT Subjects and keys
-#define subjectMQTTtoRF  Base_Topic Gateway_Name "/commands/MQTTto433"
-#define subjectRFtoMQTT  Base_Topic Gateway_Name "/433toMQTT"
-#define subjectGTWRFtoMQTT  Base_Topic Gateway_Name "/433toMQTT"
-#define RFprotocolKey "433_" // protocol will be defined if a subject contains RFprotocolKey followed by a value of 1 digit
-#define RFbitsKey "RFBITS_" // bits  will be defined if a subject contains RFbitsKey followed by a value of 2 digits
-#define repeatRFwMQTT false // do we repeat a received signal by using mqtt with RF gateway
+#define subjectMQTTtoRF433  Base_Topic Gateway_Name "/commands/MQTTto433"
+#define subjectRF433toMQTT  Base_Topic Gateway_Name "/433toMQTT"
+#define subjectGTWRF433toMQTT  Base_Topic Gateway_Name "/433toMQTT"
+#define RF433protocolKey "433_" // protocol will be defined if a subject contains RFprotocolKey followed by a value of 1 digit
+#define RF433bitsKey "RFBITS_" // bits  will be defined if a subject contains RFbitsKey followed by a value of 2 digits
+#define repeatRF433wMQTT false // do we repeat a received signal by using mqtt with RF gateway
 
 /*
 RF supported protocols
@@ -42,11 +46,65 @@ RF supported protocols
 433_5
 433_6
 */
-#define RFpulselengthKey "PLSL_" // pulselength will be defined if a subject contains RFprotocolKey followed by a value of 3 digits
+#define RF433pulselengthKey "PLSL_" // pulselength will be defined if a subject contains RFprotocolKey followed by a value of 3 digits
 // subject monitored to listen traffic processed by other gateways to store data and avoid ntuple
-#define subjectMultiGTWRF "+/+/433toMQTT"
+#define subjectMultiGTWRF433 "+/+/433toMQTT"
 //RF number of signal repetition - Can be overridden by specifying "repeat" in a JSON message.
-#define RF_EMITTER_REPEAT 20
+#define RF433_EMITTER_REPEAT 20
+
+#ifdef ESP8266
+    #define RF433_RECEIVER_PIN 13 // D7 on nodemcu
+    #define RF433_EMITTER_PIN 15 // D8 on nodemcu
+#elif ESP32
+    #define RF433_RECEIVER_PIN 27 // D27 on DOIT ESP32
+    #define RF433_EMITTER_PIN 12 // D12 on DOIT ESP32
+#elif __AVR_ATmega2560__
+    #define RF433_RECEIVER_PIN 1  //1 = D3 on mega
+    #define RF433_EMITTER_PIN 4
+#else
+    //IMPORTANT NOTE: On arduino UNO connect IR emitter pin to D9 , comment #define IR_USE_TIMER2 and uncomment #define IR_USE_TIMER1 on library <library>IRremote/boarddefs.h so as to free pin D3 for RF RECEIVER PIN
+    //RF PIN definition
+    #define RF433_RECEIVER_PIN 1 //1 = D3 on arduino
+    #define RF433_EMITTER_PIN 4 //4 = D4 on arduino
+#endif
+
+/*-------------------RF 315MHz topics & parameters----------------------*/
+//433Mhz MQTT Subjects and keys
+#define subjectMQTTtoRF315  Base_Topic Gateway_Name "/commands/MQTTto315"
+#define subjectRF315toMQTT  Base_Topic Gateway_Name "/315toMQTT"
+#define subjectGTWRF315toMQTT  Base_Topic Gateway_Name "/315toMQTT"
+#define RF315protocolKey "315_" // protocol will be defined if a subject contains RFprotocolKey followed by a value of 1 digit
+#define RF315bitsKey "RFBITS_" // bits  will be defined if a subject contains RFbitsKey followed by a value of 2 digits
+#define repeatRF315wMQTT false // do we repeat a received signal by using mqtt
+/*
+RF supported protocols
+315_1
+315_2
+315_3
+315_4
+315_5
+315_6
+*/
+#define RF315pulselengthKey "PLSL_" // pulselength will be defined if a subject contains RFprotocolKey followed by a value of 3 digits
+// subject monitored to listen traffic processed by other gateways to store data and avoid ntuple
+#define subjectMultiGTWRF315 "+/+/315toMQTT"
+//RF number of signal repetition
+#define RF315_EMITTER_REPEAT 20
+
+
+/*-------------------PIN DEFINITIONS----------------------*/
+#ifdef ESP8266
+    #define RF315_RECEIVER_PIN 14 // D5 on nodemcu
+    #define RF315_EMITTER_PIN 12 // D6 on nodemcu
+#elif defined(ESP32)
+    #define RF315_RECEIVER_PIN 13 // D13 on DOIT ESP32
+    #define RF315_EMITTER_PIN 12 // D12 on DOIT ESP32
+#else
+    //IMPORTANT NOTE: On arduino UNO connect IR emitter pin to D9 , comment #define IR_USE_TIMER2 and uncomment #define IR_USE_TIMER1 on library <library>IRremote/IRremoteInt.h so as to free pin D3 for RF RECEIVER PIN
+    //RF PIN definition
+    #define RF315_RECEIVER_PIN 1 //1 = D3 on arduino
+    #define RF315_EMITTER_PIN 4 //4 = D4 on arduino
+#endif
 
 /*-------------------RF2 topics & parameters----------------------*/
 //433Mhz newremoteswitch MQTT Subjects and keys
@@ -66,20 +124,3 @@ RF supported protocols
 #define subjectGTWPilighttoMQTT  Base_Topic Gateway_Name "/PilighttoMQTT"
 #define PilightRAW "RAW"
 #define repeatPilightwMQTT false // do we repeat a received signal by using mqtt with Pilight gateway
-
-/*-------------------PIN DEFINITIONS----------------------*/
-#ifdef ESP8266
-    #define RF_RECEIVER_PIN 0 // D3 on nodemcu // put 4 with rf bridge direct mod 
-    #define RF_EMITTER_PIN 3 // RX on nodemcu if it doesn't work with 3, try with 4 (D2) // put 5 with rf bridge direct mod
-#elif ESP32
-    #define RF_RECEIVER_PIN 27 // D27 on DOIT ESP32
-    #define RF_EMITTER_PIN 12 // D12 on DOIT ESP32
-#elif __AVR_ATmega2560__
-    #define RF_RECEIVER_PIN 1  //1 = D3 on mega
-    #define RF_EMITTER_PIN 4
-#else
-    //IMPORTANT NOTE: On arduino UNO connect IR emitter pin to D9 , comment #define IR_USE_TIMER2 and uncomment #define IR_USE_TIMER1 on library <library>IRremote/boarddefs.h so as to free pin D3 for RF RECEIVER PIN
-    //RF PIN definition
-    #define RF_RECEIVER_PIN 1 //1 = D3 on arduino
-    #define RF_EMITTER_PIN 4 //4 = D4 on arduino
-#endif
